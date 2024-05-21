@@ -44,8 +44,11 @@ class Coffee:
         
 
 class Customer:
+    all = []
+
     def __init__(self, name):
         self.name = name
+        Customer.all.append(self)
 
     def __repr__(self):
         return f"<Customer name={self.name}>"
@@ -61,7 +64,6 @@ class Customer:
         else : 
             raise Exception("Name must be a string between 1 and 15 characters")
 
-        
     def orders(self):
         return [order for order in Order.all if order.customer == self]
     
@@ -72,6 +74,24 @@ class Customer:
     
     def create_order(self, coffee, price):
         return Order(self, coffee, price)
+    
+    def orders_for_spec_coffee(self, coffee):
+        return [order for order in self.orders() if order.coffee == coffee]
+    
+    def total_for_spec_coffee(self, coffee):
+        return sum(order.price for order in self.orders_for_spec_coffee(coffee))
+    
+    @classmethod
+    def add_new_customer(cls, new_customer):
+        cls.all.append(new_customer)
+    
+    @classmethod
+    def most_aficionado(cls, coffee):
+        if coffee.orders():
+            return max(cls.all, key=lambda customer: customer.total_for_spec_coffee(coffee))
+        else: 
+            return None
+    
     
 class Order:
     all = []
